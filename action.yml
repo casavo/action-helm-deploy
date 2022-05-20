@@ -1,0 +1,77 @@
+name: Helm Deploy
+description: Deploys a helm chart to Kubernetes
+author: casavo
+branding:
+  icon: anchor
+  color: gray-dark
+inputs:
+  release:
+    description: Helm release name. (required)
+    required: true
+  namespace:
+    description: Kubernetes namespace. (required)
+    required: true
+  repo:
+    description: Helm repository url.
+    required: false
+  repo-name:
+    description: Helm repository name.
+    required: false
+  chart:
+    description: Helm chart name or local path. (required)
+    required: true
+  chart-version:
+    description: The chart version you want to use.
+    required: false
+  values:
+    description: Helm chart values, in YAML format.
+    required: false
+  values-files:
+    description: Local values files to apply, one per line.
+    required: false
+  mode:
+    description: "Helm command to execute. (default: ugrade)"
+    required: false
+    default: upgrade
+  dry-run:
+    description: "Apply Helm --dry-run flag. (default: false)"
+    required: false
+    default: false
+  atomic:
+    description: "Apply Helm --atomic flag. (default: true)"
+    required: false
+    default: true
+  helm-version:
+    description: "Helm version to use. (default: latest)"
+    required: false
+    default: latest
+runs:
+  using: composite
+  steps:
+    - name: Setup deps
+      shell: bash
+      run: |
+        pip install pyyaml
+    - name: Install Helm
+      shell: bash
+      run: |
+        if [ "${{ inputs.helm-version }}" == "latest" ]; then
+          _release=$(curl -sSL -H 'Authorization: Bearer ${{ github.token }}' https://api.github.com/repos/helm/helm/releases/latest)
+          _version=$(echo "$_release" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        else
+          _version=${{ inputs.helm-version }}
+        fi
+
+        path="$HOME/.local/action-helm"
+        _binpath="$path/bin"
+
+        _archive=$(mktemp)
+        curl -sSL https://get.helm.sh/helm-$_version-linux-amd64.tar.gz > $_archive
+        tar xzf $_archive --directory $path
+
+        echo "$_binpath" >> $GITHUB_PATH
+        export PATH="$_binpath:$PATH"
+    - name: Deploy
+      shell: bash
+      run: |
+        python ${{ github.action_path }}/action.py
