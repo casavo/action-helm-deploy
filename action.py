@@ -4,26 +4,26 @@ import sys
 import tempfile
 
 from pathlib import Path
-from yaml import load_all as ymlload, dump_all as ymldump
+from yaml import safe_load_all as ymlload, safe_dump_all as ymldump
 
 
 def load_inputs():
     rv = {}
     for key in [
-        "release",
-        "namespace",
-        "repo",
-        "repo-name",
-        "chart",
-        "chart-version",
-        "values",
-        "values-files",
-        "mode",
-        "dry-run",
         "atomic",
-        "helm-version"
+        "chart-version",
+        "chart",
+        "dry-run",
+        "helm-version",
+        "mode",
+        "namespace",
+        "release",
+        "repo-name",
+        "repo",
+        "values-files",
+        "values"
     ]:
-        rv[key] = os.environ.get(f"INPUT_{key.upper()}")
+        rv[key] = os.environ.get(f"GHINPUT_{key.upper().replace('-', '_')}")
     return rv
 
 
@@ -38,7 +38,7 @@ def load_values(wrkdir, specs):
         sys.exit(1)
     with (wrkdir / "values.yaml").open("w") as f:
         f.write(ymldump(data))
-    return dst
+    return str(dst)
 
 
 def load_values_files(specs):
@@ -131,6 +131,26 @@ def helm_upgrade(wrkdir, specs):
     run_helm("upgrade", params)
 
 
+def helm_template(wrkdir, specs):
+    load_repo(specs)
+    chart = load_chart(specs)
+    values_target = load_values(wrkdir, specs)
+    values_files = load_values_files(specs)
+    params = [
+        specs["release"],
+        chart,
+        "--namespace",
+        specs["namespace"]
+    ]
+    for values_file in values_files:
+        params.extend(["-f", values_file])
+    if values_target:
+        params.extend(["-f", values_target])
+    if specs["chart-version"]:
+        params.extend(["--version", specs["chart-version"]])
+    run_helm("template", params)
+
+
 def helm_uninstall(wrkdir, specs):
     run_helm(
         "uninstall",
@@ -147,7 +167,8 @@ def run():
     cmd = {
         "install": helm_install,
         "upgrade": helm_upgrade,
-        "uninstall": helm_uninstall
+        "uninstall": helm_uninstall,
+        "template": helm_template
     }.get(specs["mode"])
     if not cmd:
         print("Unknown `mode` specified.")

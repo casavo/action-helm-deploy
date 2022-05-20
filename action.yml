@@ -64,14 +64,28 @@ runs:
 
         path="$HOME/.local/action-helm"
         _binpath="$path/bin"
+        mkdir -p $_binpath
+
+        echo -e "\033[33mInstalling Helm $_version\033[0m\n"
 
         _archive=$(mktemp)
         curl -sSL https://get.helm.sh/helm-$_version-linux-amd64.tar.gz > $_archive
-        tar xzf $_archive --directory $path
+        tar xzf $_archive --directory $_binpath
 
         echo "$_binpath" >> $GITHUB_PATH
         export PATH="$_binpath:$PATH"
     - name: Deploy
       shell: bash
       run: |
+        export GHINPUT_ATOMIC="${{ inputs.atomic }}"
+        export GHINPUT_CHART_VERSION="${{ inputs.chart-version }}"
+        export GHINPUT_CHART="${{ inputs.chart }}"
+        export GHINPUT_DRY_RUN="${{ inputs.dry-run }}"
+        export GHINPUT_MODE="${{ inputs.mode }}"
+        export GHINPUT_NAMESPACE="${{ inputs.namespace }}"
+        export GHINPUT_RELEASE="${{ inputs.release }}"
+        export GHINPUT_REPO_NAME="${{ inputs.repo-name }}"
+        export GHINPUT_REPO="${{ inputs.repo }}"
+        export GHINPUT_VALUES_FILES="${{ inputs.values-files }}"
+        export GHINPUT_VALUES="${{ inputs.values }}"
         python ${{ github.action_path }}/action.py
