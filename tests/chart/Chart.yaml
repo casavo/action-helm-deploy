@@ -1,0 +1,15 @@
+apiVersion: v2
+type: application
+name: test
+description: Test chart
+
+version: 0.1.0
+appVersion: 0.1.0
+kubeVersion: ">=1.14.0-0"
+
+home: https://github.com/Casavo/action-helm-deploy
+sources:
+  - https://github.com/Casavo/action-helm-deploy
+maintainers:
+  - name: Casavo
+    email: engineering@casavo.com
