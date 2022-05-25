@@ -1,0 +1,20 @@
+on: [pull_request]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          mode: template
+          dry-run: true
+          release: test
+          namespace: test
+          chart: tests/chart
+          values: |
+            config:
+              foo: bar
+          values-files: |
+            tests/v1.yaml
+            tests/v2.yaml
