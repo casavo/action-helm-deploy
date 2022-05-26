@@ -70,7 +70,8 @@ def load_chart(specs):
     ) else f"charts/{specs['chart']}"
 
 
-def run_helm(cmd, params, capture=False, cwd=None, **env):
+def run_helm(cmd, params=None, capture=False, cwd=None, **env):
+    params = params or []
     helm_cmd = " ".join(["helm", cmd] + params)
     return subprocess.run(
         shlex.split(helm_cmd),
