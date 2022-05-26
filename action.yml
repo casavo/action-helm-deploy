@@ -55,6 +55,8 @@ runs:
     - name: Install Helm
       shell: bash
       run: |
+        set -eou pipefail
+
         if [ "${{ inputs.helm-version }}" == "latest" ]; then
           _release=$(curl -sSL -H 'Authorization: Bearer ${{ github.token }}' https://api.github.com/repos/helm/helm/releases/latest)
           _version=$(echo "$_release" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -70,13 +72,16 @@ runs:
 
         _archive=$(mktemp)
         curl -sSL https://get.helm.sh/helm-$_version-linux-amd64.tar.gz > $_archive
-        tar xzf $_archive --directory $_binpath
+        tar xzf $_archive --directory $_binpath --strip-components 1
 
         echo "$_binpath" >> $GITHUB_PATH
         export PATH="$_binpath:$PATH"
+
     - name: Deploy
       shell: bash
       run: |
+        set -eou pipefail
+
         export GHINPUT_ATOMIC="${{ inputs.atomic }}"
         export GHINPUT_CHART_VERSION="${{ inputs.chart-version }}"
         export GHINPUT_CHART="${{ inputs.chart }}"
@@ -88,4 +93,5 @@ runs:
         export GHINPUT_REPO="${{ inputs.repo }}"
         export GHINPUT_VALUES_FILES="${{ inputs.values-files }}"
         export GHINPUT_VALUES="${{ inputs.values }}"
+
         python ${{ github.action_path }}/action.py
