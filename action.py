@@ -1,10 +1,13 @@
 import os
+import shlex
 import subprocess
 import sys
 import tempfile
 
 from pathlib import Path
 from yaml import safe_load_all as ymlload, safe_dump_all as ymldump
+
+HELM_PATH = f"{os.environ.get('HOME', '')}/.local/action-helm/bin"
 
 
 def load_inputs():
@@ -68,17 +71,14 @@ def load_chart(specs):
 
 
 def run_helm(cmd, params, capture=False, cwd=None, **env):
-    helm_cmd = " ".join([
-        "helm",
-        cmd
-    ] + params)
+    helm_cmd = " ".join(["helm", cmd] + params)
     return subprocess.run(
-        helm_cmd,
-        shell=True,
+        shlex.split(helm_cmd),
+        shell=False,
         check=True,
         cwd=cwd,
         capture_output=capture,
-        env={**dict(os.environ), **env}
+        env={**dict(os.environ), **env, "PATH": HELM_PATH}
     )
 
 
