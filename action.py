@@ -14,6 +14,7 @@ def load_inputs():
     rv = {}
     for key in [
         "atomic",
+        "app-version",
         "chart-version",
         "chart",
         "dry-run",
@@ -162,9 +163,18 @@ def helm_uninstall(wrkdir, specs):
         ]
     )
 
+def edit_app_version(app_version):
+    return subprocess.run(
+        shlex.split(f"yq -i e '.appVersion={app_version}' Chart.yaml"),
+        shell=False,
+        check=True,
+    )
+
 
 def run():
     specs = load_inputs()
+    if specs["app-version"]:
+        edit_app_version(specs["app-version"])
     cmd = {
         "install": helm_install,
         "upgrade": helm_upgrade,
