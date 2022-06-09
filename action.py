@@ -5,7 +5,7 @@ import sys
 import tempfile
 
 from pathlib import Path
-from yaml import safe_load_all as ymlload, safe_dump_all as ymldump
+from yaml import safe_load_all as ymlload
 
 HELM_PATH = f"{os.environ.get('HOME', '')}/.local/action-helm/bin"
 
@@ -35,12 +35,12 @@ def load_values(wrkdir, specs):
         return None
     dst = wrkdir / "values.yaml"
     try:
-        data = ymlload(specs["values"])
+        ymlload(specs["values"])
     except Exception:
         print("Unable to parse `values`.")
         sys.exit(1)
     with (wrkdir / "values.yaml").open("w") as f:
-        f.write(ymldump(data))
+        f.write(specs["values"])
     return str(dst)
 
 
