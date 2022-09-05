@@ -23,6 +23,7 @@ def load_inputs():
         "release",
         "repo-name",
         "repo",
+        "timeout",
         "values-files",
         "values"
     ]:
@@ -104,6 +105,8 @@ def helm_install(wrkdir, specs):
         params.extend(["-f", values_target])
     if specs["chart-version"]:
         params.extend(["--version", specs["chart-version"]])
+    if specs["timeout"]:
+        params.extend("--timeout", specs["timeout"])
     run_helm("install", params)
 
 
@@ -129,6 +132,8 @@ def helm_upgrade(wrkdir, specs):
         params.extend(["-f", values_target])
     if specs["chart-version"]:
         params.extend(["--version", specs["chart-version"]])
+    if specs["timeout"]:
+        params.extend("--timeout", specs["timeout"])
     run_helm("upgrade", params)
 
 

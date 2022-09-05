@@ -41,6 +41,9 @@ inputs:
     description: "Apply Helm --atomic flag. (default: true)"
     required: false
     default: true
+  timeout:
+    description: "Apply Helm --timeout flag."
+    required: false
   helm-version:
     description: "Helm version to use. (default: latest)"
     required: false
@@ -91,6 +94,7 @@ runs:
         export GHINPUT_RELEASE="${{ inputs.release }}"
         export GHINPUT_REPO_NAME="${{ inputs.repo-name }}"
         export GHINPUT_REPO="${{ inputs.repo }}"
+        export GHINPUT_TIMEOUT="${{ inputs.timeout }}"
         export GHINPUT_VALUES_FILES="${{ inputs.values-files }}"
         export GHINPUT_VALUES="${{ inputs.values }}"
 
