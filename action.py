@@ -3,8 +3,8 @@ import shlex
 import subprocess
 import sys
 import tempfile
-
 from pathlib import Path
+
 from yaml import safe_load_all as ymlload
 
 HELM_PATH = f"{os.environ.get('HOME', '')}/.local/action-helm/bin"
@@ -106,7 +106,7 @@ def helm_install(wrkdir, specs):
     if specs["chart-version"]:
         params.extend(["--version", specs["chart-version"]])
     if specs["timeout"]:
-        params.extend("--timeout", specs["timeout"])
+        params.extend(["--timeout", specs["timeout"]])
     run_helm("install", params)
 
 
@@ -133,7 +133,7 @@ def helm_upgrade(wrkdir, specs):
     if specs["chart-version"]:
         params.extend(["--version", specs["chart-version"]])
     if specs["timeout"]:
-        params.extend("--timeout", specs["timeout"])
+        params.extend(["--timeout", specs["timeout"]])
     run_helm("upgrade", params)
 
 
