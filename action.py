@@ -54,7 +54,7 @@ def load_values_files(specs):
 def load_repo(specs):
     if specs["repo"]:
         run_helm(
-            "repo add",
+            "repo add --force-update",
             [
                 specs["repo-name"] or "charts",
                 specs["repo"]
