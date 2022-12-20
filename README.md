@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - run: |
-        echo "${{ secrets.KUBECONFIG }}" > .kube_config.yml
+        echo "${{ secrets.KUBECFGDATA }}" | base64 -d > .kube_config.yml
     - name: Deploy
       uses: casavo/action-helm-deploy@v1
       with:
@@ -48,7 +48,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - run: |
-        echo "${{ secrets.KUBECONFIG }}" > .kube_config.yml
+        echo "${{ secrets.KUBECFGDATA }}" | base64 -d > .kube_config.yml
     - name: Deploy
       uses: casavo/action-helm-deploy@v1
       with:
