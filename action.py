@@ -1,5 +1,6 @@
 import os
 import shlex
+import signal
 import subprocess
 import sys
 import tempfile
@@ -9,6 +10,26 @@ from yaml import safe_load_all as ymlload
 
 HELM_PATH = f"{os.environ.get('HOME', '')}/.local/action-helm/bin"
 
+class RunHelm():
+    def __call__(self, cmd, params=None, cwd=None, **env):
+        params = params or []
+        helm_cmd = " ".join(["helm", cmd] + params)
+
+        self.p = subprocess.Popen(
+            shlex.split(helm_cmd),
+            shell=False,
+            cwd=cwd,
+            env={**dict(os.environ), **env, "PATH": HELM_PATH}
+        )
+        signal.signal(signal.SIGINT, self.terminate_process)
+        signal.signal(signal.SIGTERM, self.terminate_process)
+
+        self.p.wait()
+
+    def terminate_process(self):
+        self.p.send_signal(signal.SIGINT)
+
+run_helm = RunHelm()
 
 def load_inputs():
     rv = {}
@@ -69,19 +90,6 @@ def load_chart(specs):
             specs["repo"] and specs["repo-name"]
         )
     ) else f"charts/{specs['chart']}"
-
-
-def run_helm(cmd, params=None, capture=False, cwd=None, **env):
-    params = params or []
-    helm_cmd = " ".join(["helm", cmd] + params)
-    return subprocess.run(
-        shlex.split(helm_cmd),
-        shell=False,
-        check=True,
-        cwd=cwd,
-        capture_output=capture,
-        env={**dict(os.environ), **env, "PATH": HELM_PATH}
-    )
 
 
 def helm_install(wrkdir, specs):
