@@ -4,32 +4,14 @@ import signal
 import subprocess
 import sys
 import tempfile
+
+from functools import partial
 from pathlib import Path
 
 from yaml import safe_load_all as ymlload
 
 HELM_PATH = f"{os.environ.get('HOME', '')}/.local/action-helm/bin"
 
-class RunHelm():
-    def __call__(self, cmd, params=None, cwd=None, **env):
-        params = params or []
-        helm_cmd = " ".join(["helm", cmd] + params)
-
-        self.p = subprocess.Popen(
-            shlex.split(helm_cmd),
-            shell=False,
-            cwd=cwd,
-            env={**dict(os.environ), **env, "PATH": HELM_PATH}
-        )
-        signal.signal(signal.SIGINT, self.terminate_process)
-        signal.signal(signal.SIGTERM, self.terminate_process)
-
-        self.p.wait()
-
-    def terminate_process(self):
-        self.p.send_signal(signal.SIGINT)
-
-run_helm = RunHelm()
 
 def load_inputs():
     rv = {}
@@ -79,9 +61,10 @@ def load_repo(specs):
             [
                 specs["repo-name"] or "charts",
                 specs["repo"]
-            ]
+            ],
+            exit=False
         )
-        run_helm("repo update")
+        run_helm("repo update", exit=False)
 
 
 def load_chart(specs):
@@ -90,6 +73,27 @@ def load_chart(specs):
             specs["repo"] and specs["repo-name"]
         )
     ) else f"charts/{specs['chart']}"
+
+
+def kill_helm(proc):
+    proc.send_signal(signal.SIGINT)
+
+
+def run_helm(cmd, params=None, cwd=None, exit=True, **env):
+    params = params or []
+    helm_cmd = " ".join(["helm", cmd] + params)
+    proc = subprocess.Popen(
+        shlex.split(helm_cmd),
+        shell=False,
+        cwd=cwd,
+        env={**dict(os.environ), **env, "PATH": HELM_PATH}
+    )
+    proc_sig = partial(kill_helm, proc)
+    signal.signal(signal.SIGINT, proc_sig)
+    signal.signal(signal.SIGTERM, proc_sig)
+    proc.wait()
+    if exit:
+        sys.exit(proc.returncode)
 
 
 def helm_install(wrkdir, specs):
