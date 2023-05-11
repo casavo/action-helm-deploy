@@ -1,8 +1,11 @@
 import os
 import shlex
+import signal
 import subprocess
 import sys
 import tempfile
+
+from functools import partial
 from pathlib import Path
 
 from yaml import safe_load_all as ymlload
@@ -58,9 +61,10 @@ def load_repo(specs):
             [
                 specs["repo-name"] or "charts",
                 specs["repo"]
-            ]
+            ],
+            exit=False
         )
-        run_helm("repo update")
+        run_helm("repo update", exit=False)
 
 
 def load_chart(specs):
@@ -71,17 +75,25 @@ def load_chart(specs):
     ) else f"charts/{specs['chart']}"
 
 
-def run_helm(cmd, params=None, capture=False, cwd=None, **env):
+def kill_helm(proc):
+    proc.send_signal(signal.SIGINT)
+
+
+def run_helm(cmd, params=None, cwd=None, exit=True, **env):
     params = params or []
     helm_cmd = " ".join(["helm", cmd] + params)
-    return subprocess.run(
+    proc = subprocess.Popen(
         shlex.split(helm_cmd),
         shell=False,
-        check=True,
         cwd=cwd,
-        capture_output=capture,
         env={**dict(os.environ), **env, "PATH": HELM_PATH}
     )
+    proc_sig = partial(kill_helm, proc)
+    signal.signal(signal.SIGINT, proc_sig)
+    signal.signal(signal.SIGTERM, proc_sig)
+    proc.wait()
+    if exit:
+        sys.exit(proc.returncode)
 
 
 def helm_install(wrkdir, specs):
