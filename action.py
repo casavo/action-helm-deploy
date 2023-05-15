@@ -75,7 +75,7 @@ def load_chart(specs):
     ) else f"charts/{specs['chart']}"
 
 
-def kill_helm(proc):
+def kill_helm(proc, signum, frame):
     proc.send_signal(signal.SIGINT)
 
 
