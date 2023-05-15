@@ -98,4 +98,4 @@ runs:
         export GHINPUT_VALUES_FILES="${{ inputs.values-files }}"
         export GHINPUT_VALUES="${{ inputs.values }}"
 
-        python ${{ github.action_path }}/action.py
+        exec python ${{ github.action_path }}/action.py
