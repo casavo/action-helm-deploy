@@ -54,7 +54,7 @@ runs:
     - name: Setup deps
       shell: bash
       run: |
-        pip install pyyaml
+        pip install --user pyyaml
     - name: Install Helm
       shell: bash
       run: |
