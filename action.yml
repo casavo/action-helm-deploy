@@ -67,10 +67,18 @@ runs:
         _binpath="$path/bin"
         mkdir -p $_binpath
 
+        # Determine architecture
+        _arch=$(uname -m)
+        if [ "$_arch" = "aarch64" ] || [ "$_arch" = "arm64" ]; then
+          _platform="arm64"
+        else
+          _platform="amd64"
+        fi
+
         echo -e "\033[33mInstalling Helm $_version\033[0m\n"
 
         _archive=$(mktemp)
-        curl -sSL https://get.helm.sh/helm-$_version-linux-amd64.tar.gz > $_archive
+        curl -sSL https://get.helm.sh/helm-$_version-linux-$_platform.tar.gz > $_archive
         tar xzf $_archive --directory $_binpath --strip-components 1
 
         echo "$_binpath" >> $GITHUB_PATH
