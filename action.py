@@ -108,7 +108,7 @@ def helm_install(wrkdir, specs):
         specs["namespace"]
     ]
     if specs["atomic"] == "true":
-        params.append("--atomic")
+        params.append("--rollback-on-failure")
     if specs["dry-run"] == "true":
         params.append("--dry-run")
     for values_file in values_files:
@@ -135,7 +135,7 @@ def helm_upgrade(wrkdir, specs):
         specs["namespace"]
     ]
     if specs["atomic"] == "true":
-        params.append("--atomic")
+        params.append("--rollback-on-failure")
     if specs["dry-run"] == "true":
         params.append("--dry-run")
     for values_file in values_files:
