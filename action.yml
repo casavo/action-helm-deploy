@@ -32,11 +32,11 @@ inputs:
   dry-run:
     description: "Apply Helm --dry-run flag. (default: false)"
     required: false
-    default: false
+    default: "false"
   rollback-on-failure:
     description: "Apply Helm --rollback-on-failure flag. (default: true)"
     required: false
-    default: true
+    default: "true"
   timeout:
     description: "Apply Helm --timeout flag."
     required: false
