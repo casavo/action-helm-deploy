@@ -37,8 +37,8 @@ inputs:
     description: "Apply Helm --dry-run flag. (default: false)"
     required: false
     default: false
-  atomic:
-    description: "Apply Helm --atomic flag. (default: true)"
+  rollback-on-failure:
+    description: "Apply Helm --rollback-on-failure flag. (default: true)"
     required: false
     default: true
   timeout:
@@ -89,13 +89,13 @@ runs:
       run: |
         set -eou pipefail
 
-        export GHINPUT_ATOMIC="${{ inputs.atomic }}"
         export GHINPUT_CHART_VERSION="${{ inputs.chart-version }}"
         export GHINPUT_CHART="${{ inputs.chart }}"
         export GHINPUT_DRY_RUN="${{ inputs.dry-run }}"
         export GHINPUT_MODE="${{ inputs.mode }}"
         export GHINPUT_NAMESPACE="${{ inputs.namespace }}"
         export GHINPUT_RELEASE="${{ inputs.release }}"
+        export GHINPUT_ROLLBACK_ON_FAILURE="${{ inputs.rollback-on-failure }}"
         export GHINPUT_REPO_NAME="${{ inputs.repo-name }}"
         export GHINPUT_REPO="${{ inputs.repo }}"
         export GHINPUT_TIMEOUT="${{ inputs.timeout }}"

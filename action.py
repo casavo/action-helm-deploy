@@ -16,7 +16,6 @@ HELM_PATH = f"{os.environ.get('HOME', '')}/.local/action-helm/bin"
 def load_inputs():
     rv = {}
     for key in [
-        "atomic",
         "chart-version",
         "chart",
         "dry-run",
@@ -24,6 +23,7 @@ def load_inputs():
         "mode",
         "namespace",
         "release",
+        "rollback-on-failure",
         "repo-name",
         "repo",
         "timeout",
@@ -66,7 +66,6 @@ def load_repo(specs):
         )
         run_helm("repo update", exit=False)
 
-
 def load_chart(specs):
     return specs["chart"] if (
         not specs["repo"] or (
@@ -107,7 +106,7 @@ def helm_install(wrkdir, specs):
         "--namespace",
         specs["namespace"]
     ]
-    if specs["atomic"] == "true":
+    if specs["rollback-on-failure"] == "true":
         params.append("--rollback-on-failure")
     if specs["dry-run"] == "true":
         params.append("--dry-run")
@@ -134,7 +133,7 @@ def helm_upgrade(wrkdir, specs):
         "--namespace",
         specs["namespace"]
     ]
-    if specs["atomic"] == "true":
+    if specs["rollback-on-failure"] == "true":
         params.append("--rollback-on-failure")
     if specs["dry-run"] == "true":
         params.append("--dry-run")
