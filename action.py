@@ -43,7 +43,7 @@ def helm_upgrade(work_dir, specs):
     chart = load_chart(specs)
     values_target = load_values(work_dir, specs)
     values_files = load_values_files(specs)
-    params = [specs["release"], chart, "--install", "--force-conflicts", "--server-side=true", "--namespace", specs["namespace"]]
+    params = [specs["release"], chart, "--install", "--namespace", specs["namespace"]]
     if specs["rollback-on-failure"] == "true":
         params.append("--rollback-on-failure")
     if specs["dry-run"] == "true":
