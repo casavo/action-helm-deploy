@@ -88,7 +88,6 @@ runs:
         export GHINPUT_CHART_VERSION="${{ inputs.chart-version }}"
         export GHINPUT_CHART="${{ inputs.chart }}"
         export GHINPUT_DRY_RUN="${{ inputs.dry-run }}"
-        export GHINPUT_MODE="${{ inputs.mode }}"
         export GHINPUT_NAMESPACE="${{ inputs.namespace }}"
         export GHINPUT_RELEASE="${{ inputs.release }}"
         export GHINPUT_ROLLBACK_ON_FAILURE="${{ inputs.rollback-on-failure }}"

@@ -25,7 +25,6 @@ def load_inputs():
         "chart",
         "dry-run",
         "helm-version",
-        "mode",
         "namespace",
         "release",
         "rollback-on-failure",
