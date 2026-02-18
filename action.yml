@@ -54,6 +54,8 @@ runs:
       run: |
         set -eou pipefail
 
+        export HELM_BIN=$(command -v helm)
+
         export GHINPUT_CHART_VERSION="${{ inputs.chart-version }}"
         export GHINPUT_CHART="${{ inputs.chart }}"
         export GHINPUT_DRY_RUN="${{ inputs.dry-run }}"

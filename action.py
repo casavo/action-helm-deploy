@@ -99,7 +99,8 @@ def load_chart(specs):
 
 def run_helm(cmd, params=None, cwd=None, exit=True, **env):
     params = params or []
-    helm_cmd = " ".join(["helm", cmd] + params)
+    helm_bin = os.environ.get("HELM_BIN", "helm")
+    helm_cmd = " ".join([helm_bin, cmd] + params)
     proc = subprocess.Popen(
         shlex.split(helm_cmd),
         shell=False,
