@@ -47,7 +47,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: azure/setup-helm@v4.3.0
+    - uses: azure/setup-helm@v5.0.0
 
     - name: Deploy
       shell: bash
