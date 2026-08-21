@@ -38,6 +38,23 @@ class TestHelmUninstall(unittest.TestCase):
             ["myrelease", "--namespace", "default", "--ignore-not-found", "--wait"],
         )
 
+    @patch("action.run_helm")
+    def test_helm_uninstall_appends_timeout_after_wait(self, mock_run_helm):
+        specs = make_specs(mode="uninstall", timeout="5m")
+        action.helm_uninstall(specs)
+        mock_run_helm.assert_called_once_with(
+            "uninstall",
+            [
+                "myrelease",
+                "--namespace",
+                "default",
+                "--ignore-not-found",
+                "--wait",
+                "--timeout",
+                "5m",
+            ],
+        )
+
 
 class TestHelmUpgrade(unittest.TestCase):
     @patch("action.load_repo")

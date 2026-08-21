@@ -79,16 +79,16 @@ def helm_upgrade(work_dir, specs):
 
 
 def helm_uninstall(specs):
-    run_helm(
-        "uninstall",
-        [
-            specs["release"],
-            "--namespace",
-            specs["namespace"],
-            "--ignore-not-found",
-            "--wait",
-        ],
-    )
+    params = [
+        specs["release"],
+        "--namespace",
+        specs["namespace"],
+        "--ignore-not-found",
+        "--wait",
+    ]
+    if specs["timeout"]:
+        params.extend(["--timeout", specs["timeout"]])
+    run_helm("uninstall", params)
 
 
 def load_repo(specs):
