@@ -18,8 +18,8 @@ inputs:
     description: Helm repository name.
     required: false
   chart:
-    description: Helm chart name or local path. (required)
-    required: true
+    description: "Helm chart name or local path. (required for mode: upgrade)"
+    required: false
   chart-version:
     description: The chart version you want to use.
     required: false
@@ -29,6 +29,10 @@ inputs:
   values-files:
     description: Local values files to apply, one per line.
     required: false
+  mode:
+    description: "Helm command to execute: `upgrade` or `uninstall`. (default: upgrade)"
+    required: false
+    default: "upgrade"
   dry-run:
     description: "Apply Helm --dry-run flag. (default: false)"
     required: false
@@ -59,6 +63,7 @@ runs:
         export GHINPUT_CHART_VERSION="${{ inputs.chart-version }}"
         export GHINPUT_CHART="${{ inputs.chart }}"
         export GHINPUT_DRY_RUN="${{ inputs.dry-run }}"
+        export GHINPUT_MODE="${{ inputs.mode }}"
         export GHINPUT_NAMESPACE="${{ inputs.namespace }}"
         export GHINPUT_RELEASE="${{ inputs.release }}"
         export GHINPUT_ROLLBACK_ON_FAILURE="${{ inputs.rollback-on-failure }}"

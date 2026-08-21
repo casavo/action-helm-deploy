@@ -1,6 +1,21 @@
 on: [pull_request]
 
 jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run unit tests
+        run: python3 -m unittest tests.test_action -v
+
   linux-self-hosted:
     runs-on: self-hosted
     steps:
@@ -23,5 +38,14 @@ jobs:
           values-files: |
             tests/v1.yaml
             tests/v2.yaml
+        env:
+            KUBECONFIG: .kube_config.yml
+
+      - name: Uninstall
+        uses: ./
+        with:
+          mode: uninstall
+          release: test-self-hosted
+          namespace: default
         env:
             KUBECONFIG: .kube_config.yml

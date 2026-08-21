@@ -65,3 +65,27 @@ jobs:
       env:
         KUBECONFIG: .kube_config.yml
 ```
+
+## Uninstalling a release
+
+Set `mode: uninstall` to run `helm uninstall` instead of `helm upgrade --install`:
+
+```yaml
+    - name: Uninstall
+      uses: casavo/action-helm-deploy@v1
+      with:
+        mode: uninstall
+        release: myapp
+        namespace: default
+      env:
+        KUBECONFIG: .kube_config.yml
+```
+
+`mode` defaults to `upgrade`, so existing usages are unaffected.
+
+> **Note:** `helm uninstall` removes the release's `Ingress`, and cert-manager will
+> garbage-collect the associated `Certificate` (it's owned by the Ingress via
+> ingress-shim). The TLS `Secret` is **not** owned by the Ingress, though, and will
+> survive the uninstall unless cert-manager runs with `--enable-certificate-owner-ref`.
+> If your chart provisions TLS via cert-manager, plan to clean up the leftover
+> `Secret` separately (e.g. in the same workflow that calls `mode: uninstall`).

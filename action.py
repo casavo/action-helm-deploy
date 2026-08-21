@@ -14,8 +14,15 @@ HELM_PATH = f"{os.environ.get('HOME', '')}/.local/action-helm/bin"
 
 def run():
     specs = load_inputs()
-    work_dir = Path(tempfile.mkdtemp()).resolve()
-    helm_upgrade(work_dir, specs)
+    mode = specs["mode"] or "upgrade"
+    if mode == "upgrade":
+        work_dir = Path(tempfile.mkdtemp()).resolve()
+        helm_upgrade(work_dir, specs)
+    elif mode == "uninstall":
+        helm_uninstall(specs)
+    else:
+        print(f"Unknown `mode` specified: {mode}")
+        sys.exit(1)
 
 
 def load_inputs():
@@ -25,6 +32,7 @@ def load_inputs():
         "chart",
         "dry-run",
         "helm-version",
+        "mode",
         "namespace",
         "release",
         "rollback-on-failure",
@@ -39,6 +47,9 @@ def load_inputs():
 
 
 def helm_upgrade(work_dir, specs):
+    if not specs["chart"]:
+        print("`chart` is required for `mode: upgrade`.")
+        sys.exit(1)
     load_repo(specs)
     chart = load_chart(specs)
     values_target = load_values(work_dir, specs)
@@ -65,6 +76,19 @@ def helm_upgrade(work_dir, specs):
     if specs["timeout"]:
         params.extend(["--timeout", specs["timeout"]])
     run_helm("upgrade", params)
+
+
+def helm_uninstall(specs):
+    params = [
+        specs["release"],
+        "--namespace",
+        specs["namespace"],
+        "--ignore-not-found",
+        "--wait",
+    ]
+    if specs["timeout"]:
+        params.extend(["--timeout", specs["timeout"]])
+    run_helm("uninstall", params)
 
 
 def load_repo(specs):
