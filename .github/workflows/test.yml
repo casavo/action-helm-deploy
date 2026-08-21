@@ -25,3 +25,12 @@ jobs:
             tests/v2.yaml
         env:
             KUBECONFIG: .kube_config.yml
+
+      - name: Uninstall
+        uses: ./
+        with:
+          mode: uninstall
+          release: test-self-hosted
+          namespace: default
+        env:
+            KUBECONFIG: .kube_config.yml
