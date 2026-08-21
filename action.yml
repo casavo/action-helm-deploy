@@ -18,8 +18,8 @@ inputs:
     description: Helm repository name.
     required: false
   chart:
-    description: Helm chart name or local path. (required)
-    required: true
+    description: "Helm chart name or local path. (required for mode: upgrade)"
+    required: false
   chart-version:
     description: The chart version you want to use.
     required: false

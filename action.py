@@ -47,6 +47,9 @@ def load_inputs():
 
 
 def helm_upgrade(work_dir, specs):
+    if not specs["chart"]:
+        print("`chart` is required for `mode: upgrade`.")
+        sys.exit(1)
     load_repo(specs)
     chart = load_chart(specs)
     values_target = load_values(work_dir, specs)

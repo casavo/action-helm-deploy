@@ -39,6 +39,18 @@ class TestHelmUninstall(unittest.TestCase):
         )
 
 
+class TestHelmUpgrade(unittest.TestCase):
+    @patch("action.load_repo")
+    @patch("action.run_helm")
+    def test_helm_upgrade_missing_chart_exits_1(self, mock_run_helm, mock_load_repo):
+        specs = make_specs(chart=None)
+        with self.assertRaises(SystemExit) as ctx:
+            action.helm_upgrade(None, specs)
+        self.assertEqual(ctx.exception.code, 1)
+        mock_load_repo.assert_not_called()
+        mock_run_helm.assert_not_called()
+
+
 class TestRunDispatch(unittest.TestCase):
     @patch("action.helm_upgrade")
     @patch("action.load_inputs")
